@@ -1,0 +1,95 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "0c267d0a-4013-4f01-8676-773d8c978029",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        60,
+        0
+      ],
+      "id": "ecf6391e-b5ae-447a-a448-df18fff538f1",
+      "name": "Webhook",
+      "webhookId": "0c267d0a-4013-4f01-8676-773d8c978029"
+    },
+    {
+      "parameters": {
+        "jsCode": "const body = $input.first().json.body;\n\nconst { name, narrative } = body;\n\nconst faultIndicators = [\"hit me\", \"ran a red light\", \"not my fault\"];\nconst lowerNarrative = narrative.toLowerCase();\n\nlet likelyAtFault = false;\n\nfor (const keyword of faultIndicators) {\n  if (lowerNarrative.includes(keyword)) {\n    likelyAtFault = true;\n    break;\n  }\n}\n\nconst message = likelyAtFault\n  ? `${name} is likely NOT at fault based on the narrative.`\n  : `${name}'s fault status is unclear from the narrative.`;\n\nreturn [{ json: { message } }];\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        280,
+        0
+      ],
+      "id": "f1f1cada-45d5-4adb-a07c-bbe83036c0e5",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "sendTo": "urs.vinu04@gmail.com",
+        "subject": "Fault or not Fault",
+        "message": "={{ $json.message }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        500,
+        0
+      ],
+      "id": "004613cb-b3fd-4671-bfce-dae03fb522a7",
+      "name": "Gmail",
+      "webhookId": "b126ce7a-ea02-473a-b2e9-885ceb0f69a2",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "xXeVkiTm8QrhPQ4k",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "ca85a77b-4365-4a38-8f6a-ef3d789032e8",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "530ce0f70fa6831bee31f6744a75d653da0e72734dfbe78065cb66fec8e93ea1"
+  },
+  "id": "Hqsdin0mnzDfrE8a",
+  "tags": []
+}
